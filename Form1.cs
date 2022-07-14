@@ -13,19 +13,25 @@ namespace KeyTeacher {
     public partial class Form1 : Form {
         Typing typing;
         void SetConfig() {
-            typing.config.Upper = confUpper.Checked;
-            typing.config.Numbers = confNumbers.Checked;
-            typing.config.PunctuationMarks = confPunctuationMarks.Checked;
-            typing.config.RU = confRU.Checked;
-            typing.config.EN = confEN.Checked;
-            typing.config.WaitSuccessPress = confWaitSuccessPress.Checked;
-            typing.config.GenMode = (byte)comboGenMode.SelectedIndex;
-            typing.metronome.Enabled = checkMetronome.Checked;
-            typing.metronome.Period = trackMetronomeDelay.Value;
+            typing.FormConfig.tShortText = tboxShortText;
+            typing.FormConfig.tFullText = tboxFullText;
+            typing.FormConfig.tabStatistic = tabStatistic;
+            typing.FormConfig.tabConfig = tabConfig;
+            typing.FormConfig.bStartStop = bStartStop;
+
+            typing.FormConfig.Upper = confUpper.Checked;
+            typing.FormConfig.Numbers = confNumbers.Checked;
+            typing.FormConfig.PunctuationMarks = confPunctuationMarks.Checked;
+            typing.FormConfig.RU = confRU.Checked;
+            typing.FormConfig.EN = confEN.Checked;
+            typing.FormConfig.WaitSuccessPress = confWaitSuccessPress.Checked;
+            typing.FormConfig.GenMode = (byte)comboGenMode.SelectedIndex;
+            typing.FormConfig.MetronomeEnabled = checkMetronome.Checked;
+            typing.FormConfig.MetronomePeriod = trackMetronomeDelay.Value;
         }
         public Form1() {
             InitializeComponent();
-            typing = new Typing(tboxShortText, tboxFullText, tabStatistic, bStartStop);
+            typing = new Typing();
             comboGenMode.SelectedIndex = 0;
             SetConfig();
         }
@@ -48,48 +54,48 @@ namespace KeyTeacher {
 
         #region ---- вкладка Config ---------------
         private void confUpper_Click(object sender, EventArgs e) {
-            typing.config.Upper = confUpper.Checked;
+            typing.FormConfig.Upper = confUpper.Checked;
         }
         private void confNumbers_Click(object sender, EventArgs e) {
-            typing.config.Numbers = confNumbers.Checked;
+            typing.FormConfig.Numbers = confNumbers.Checked;
         }
         private void confPunctuationMarks_Click(object sender, EventArgs e) {
-            typing.config.PunctuationMarks = confPunctuationMarks.Checked;
+            typing.FormConfig.PunctuationMarks = confPunctuationMarks.Checked;
         }
         private void confWaitSuccessPress_Click(object sender, EventArgs e) {
-            typing.config.WaitSuccessPress = confWaitSuccessPress.Checked;
+            typing.FormConfig.WaitSuccessPress = confWaitSuccessPress.Checked;
         }
         private void confRU_Click(object sender, EventArgs e) {
-            typing.config.RU = confRU.Checked;
+            typing.FormConfig.RU = confRU.Checked;
             if (!confRU.Checked && !confEN.Checked) {
                 confEN.Checked = true;
-                typing.config.EN = true;
+                typing.FormConfig.EN = true;
             }
         }
         private void confEN_Click(object sender, EventArgs e) {
-            typing.config.EN = confEN.Checked;
+            typing.FormConfig.EN = confEN.Checked;
             if (!confRU.Checked && !confEN.Checked) {
                 confRU.Checked = true;
-                typing.config.RU = true;
+                typing.FormConfig.RU = true;
             }
 
         }
         private void comboGenMode_SelectedIndexChanged(object sender, EventArgs e) {
-            typing.config.GenMode = (byte)comboGenMode.SelectedIndex;
+            typing.FormConfig.GenMode = (byte)comboGenMode.SelectedIndex;
         }
         private void checkMetronome_Click(object sender, EventArgs e) {
             if (checkMetronome.Checked) {
                 trackMetronomeDelay.Enabled = true;
-                typing.metronome.Enabled = true;
-                typing.metronome.Period = trackMetronomeDelay.Value;
+                typing.FormConfig.MetronomeEnabled = true;
+                typing.FormConfig.MetronomePeriod = trackMetronomeDelay.Value;
             } else {
                 trackMetronomeDelay.Enabled = false;
-                typing.metronome.Enabled = false;
+                typing.FormConfig.MetronomeEnabled = false;
             }
         }
         private void trackMetronomeDelay_ValueChanged(object sender, EventArgs e) {
             lblMetronomeDelay.Text = trackMetronomeDelay.Value.ToString();
-            typing.config.MetronomePeriod = trackMetronomeDelay.Value;
+            typing.FormConfig.MetronomePeriod = trackMetronomeDelay.Value;
         }
         #endregion
 

@@ -12,46 +12,52 @@ using System.Linq;
 using System.Diagnostics;
 
 namespace KeyTeacher {
-    class Typing {
+    public class Typing {
+        #region ---- Struct ---------------------------------------
+        public struct FormConfig_t {
+            public RichTextBox tShortText;
+            public RichTextBox tFullText;
+            public TabPage tabStatistic;
+            public TabPage tabConfig;
+            public Button bStartStop;
+            public bool WaitSuccessPress;    //ждать успешное нажатие
+            public bool EN;
+            public bool RU;
+            public bool PunctuationMarks;    //занки препинания
+            public bool Numbers;     //числа
+            public bool Upper;       //заглавные
+            public byte GenMode;    //режим генерации
+            public bool MetronomeEnabled;
+            public int MetronomePeriod;
+        }
+        #endregion -------------------------------------------------
         #region ---- ПЕРЕМЕННЫЕ ------------------------------
         const int MaxPressDelay = 1000;     //максимальное время нажатия клавиши
         const int MinPressDelay = 50;     //минимальное время нажатия клавиши
-        Config config;                                //конфиг
-        RichTextBox FullTextFormObj;
-        Button StartButton;
+        public FormConfig_t FormConfig;        //конфиграция настроек из формы
+        Symbols symbols;
+        Generator generator;
         Metronome metronome;
-        Stopwatch timer = new Stopwatch();
+        Printer printer;
         bool TypingStart = false;         //флаг старта процесса печати
         #endregion
 
-        public Typing(RichTextBox ShortTextFormObj, RichTextBox FullTextFormObj, TabPage StatisticFormObj, Button StartButton) {
-            this.ShortTextFormObj = ShortTextFormObj;
-            this.FullTextFormObj = FullTextFormObj;
-            this.StatisticFormObj = StatisticFormObj;
-            this.StartButton = StartButton;
-            config = new Config_t { RU = true };
-            Init_Symbols(out Symbols);
-            Init_StatisticForm();
-            metronome = new Metronome(ref config.MetronomeEnabled, ref config.MetronomePeriod);
+        public Typing() {
+            FormConfig = new FormConfig_t { RU = true };
         }
         public void KeyPressHandler(char key)//обработчик нажатий на кнопки
         {
             if (TypingStart) {
-                if (key == GetCurrentSymbol() && ((!metronome.Early && !metronome.Late) || !metronome.isStarted)) {
-                    AddSuccessPress(key);
-                } else {
-                    AddFailPress(key);
-                }
+                printer.KeyPress(key);
             }
         }
         public void Start()//запустить процесс печати
         {
             TypingStart = true;
-            Init_Symbols(out Symbols);
-            Init_Dictionary();
-            Init_ShortText();
-            ShortTextShow();
-            Init_StatisticForm();
+            symbols = new Symbols(FormConfig, MaxPressDelay, MinPressDelay);
+            generator = new Generator(FormConfig, symbols);
+            metronome = new Metronome(FormConfig);
+            printer = new Printer(FormConfig, generator, metronome, symbols, MaxPressDelay);
             if (metronome.Enabled) {
                 metronome.Start();
             }
@@ -60,51 +66,6 @@ namespace KeyTeacher {
         {
             TypingStart = false;
             metronome.Stop();
-        }
-        void AddSuccessPress(char symbol)//обновляет переменные при успешном нажатии
-        {
-            if (!CurrentSymbolIsHandled)//текущий символ еще не обработан
-            {
-                for (int i = 0; i < Symbols.Length; i++)    //ищем нужный символ, прибавляем к счётчику
-                {
-                    if (Symbols[i].Name == symbol) {
-                        Symbols[i].SuccessPress++;
-                        timer.Stop();
-                        PressDelayAppend(Symbols[i], (int)timer.ElapsedMilliseconds);
-                        break;
-                    }
-                }
-                UpdateStatistic();
-                ShortTextCurrentSymbolSetColor(SuccessColor);
-                FullTextAddCurrentSymbol();
-            }
-            CurrentSymbolIsHandled = true;
-            ShortTextShift();
-            ShortTextAdd();
-            ShortTextShow();
-        }
-        void AddFailPress(char symbol)//обновляет переменные при неверном нажатии
-        {
-            if (!CurrentSymbolIsHandled)    //текущий символ еще не обработан
-            {
-                for (int i = 0; i < Symbols.Length; i++) {
-                    if (Symbols[i].Name == symbol) {
-                        Symbols[i].FailPress++;
-                        PressDelayAppend(Symbols[i], MaxPressDelay);
-                        break;
-                    }
-                }
-                UpdateStatistic();
-                ShortTextCurrentSymbolSetColor(FailColor);
-                FullTextAddCurrentSymbol();
-            }
-            CurrentSymbolIsHandled = true;
-            if (!config.WaitSuccessPress)    //если в конфиге задано не ждать правильное нажатие
-            {
-                ShortTextShift();
-                ShortTextShow();
-            }
-            Beep();
         }
     }
     public class Metronome {
@@ -115,10 +76,11 @@ namespace KeyTeacher {
         public bool isStarted { get; private set; }
         public int Period;
         public bool Enabled;
-        #endregion
-        public Metronome(ref bool enabled, ref int period) {
-            Period = period;
-            Enabled = enabled;
+        #endregion --------------------------------------------
+        //------ Функции ---------------------------------------
+        public Metronome(Typing.FormConfig_t config) {
+            Period = config.MetronomePeriod;
+            Enabled = config.MetronomeEnabled;
         }
         public void Start() {
             if (Enabled) {
@@ -145,46 +107,65 @@ namespace KeyTeacher {
             Early = false;
             Late = false;
         }
+        //-----------------------------------------------------
     }
-    public class PrintText {
+    public class Printer {
+        #region ---- Данные --------------------------------
+        //--- Переменные ---
         readonly Color DefaultColor = Color.White;
         readonly Color SuccessColor = Color.LightGreen;
         readonly Color FailColor = Color.LightPink;
         const int ShadowLen = 10;
         const int MaxLen = 20;
+        Typing.FormConfig_t config;
         Generator generator;
+        Metronome metronome;
+        Symbols symbols;
+        int MaxPressDelay;
+        List<Text_t> Text;    //бегущая строка с печатаемым текстом
+        int CurrentSymbol = 0;
+        public bool CurrentSymbolIsHandled = false;        //текущий символ уже обработан
+        Stopwatch timer = new Stopwatch();
+
+        //--- Структуры ----
         struct Text_t {
             public char Symbol;
             public Color Color;
         }
-        List<Text_t> Text;    //бегущая строка с печатаемым текстом
-        int CurrentSymbol = 0;
-        bool CurrentSymbolIsHandled = false;        //текущий символ уже обработан
-        RichTextBox ShortTextFormObj;   //элемент формы для печати текста
-        RichTextBox FullTextFormObj;   //элемент формы для печати текста
-        Config config;
+        #endregion --------------------------------------------
 
-        public PrintText(RichTextBox ShortTextFormObj, RichTextBox FullTextFormObj, Config config, Generator generator) {
-            this.ShortTextFormObj = ShortTextFormObj;
-            this.FullTextFormObj = FullTextFormObj;
+        //------ Функции ---------------------------------------
+        public Printer(Typing.FormConfig_t config, Generator generator, Metronome metronome, Symbols symbols, int MaxPressDelay) {
             this.config = config;
             this.generator = generator;
+            this.metronome = metronome;
+            this.symbols = symbols;
+            this.MaxPressDelay = MaxPressDelay;
+            TextInit();
+            Show();
+            timer.Restart();
+        }
+        void TextInit() {
             Text = new List<Text_t>(MaxLen * 2);
             for (int i = 0; i < ShadowLen; i++)        //добавляем пробелы в начале строки
             {
-                Add(" ");
+                AddText(" ");
             }
             while (Text.Count < MaxLen) {
-                Add();
+                AddText();
             }
             CurrentSymbol = ShadowLen;
         }
-        void Add() //добавляет текст в переменную ShortText
+        void AddText() //добавляет текст в переменную Text
+        {
+            if (Text.Count < MaxLen) {
+                AddText(generator.GetWord());
+            }
+        }
+        void AddText(string str) //добавляет текст в переменную Text
         {
             if (Text.Count < MaxLen) {
                 var item = new Text_t { };
-                string str = "";
-                str = generator.GetWord();
                 for (int i = 0; i < str.Length; i++) {
                     item.Symbol = str[i];
                     item.Color = DefaultColor;
@@ -192,15 +173,43 @@ namespace KeyTeacher {
                 }
             }
         }
-        void Add(string str) //добавляет текст в переменную ShortText
-        {
-            if (Text.Count < MaxLen) {
-                var item = new Text_t { };
-                for (int i = 0; i < str.Length; i++) {
-                    item.Symbol = str[i];
-                    item.Color = DefaultColor;
-                    Text.Add(item);
-                }
+        public void KeyPress(char key) {
+            if (key == GetCurrentSymbol() && ((!metronome.Early && !metronome.Late) || !metronome.isStarted)) {
+                SuccessPress(key);
+            } else {
+                FailPress(key);
+            }
+        }
+        void SuccessPress(char key) {
+            if (!CurrentSymbolIsHandled)//текущий символ еще не обработан
+            {
+                symbols.AddSuccessPress(key);
+                symbols.StatisticUpdate();
+                symbols.SetPressDelay(key, (int)timer.ElapsedMilliseconds);
+                CurrentSymbolSetColor(SuccessColor);
+                FullTextAddSymbol(Text[CurrentSymbol]);
+            }
+            timer.Restart();
+            CurrentSymbolIsHandled = true;
+            Shift();
+            AddText();
+            Show();
+        }
+        void FailPress(char key) {
+            if (!CurrentSymbolIsHandled)    //текущий символ еще не обработан
+            {
+                symbols.AddFailPress(key);
+                symbols.StatisticUpdate();
+                CurrentSymbolSetColor(FailColor);
+                FullTextAddSymbol(Text[CurrentSymbol]);
+            }
+            Sound.Beep();
+            CurrentSymbolIsHandled = true;
+            if (!config.WaitSuccessPress)    //если в конфиге задано не ждать правильное нажатие
+            {
+                timer.Restart();
+                Shift();
+                Show();
             }
         }
         void CurrentSymbolSetColor(Color color) {
@@ -215,29 +224,28 @@ namespace KeyTeacher {
                 CurrentSymbol++;
             }
             CurrentSymbolIsHandled = false;     //текущий символ обновлен - сбрасываем флаг
-            Add();
-            timer.Reset();
-            timer.Start();
+            AddText();
         }
         char GetCurrentSymbol() {
             return Text[CurrentSymbol].Symbol;
         }
-        void FormObjAppendText(RichTextBox obj, Text_t symbol) {
+        void FormObjAppendColorText(RichTextBox obj, Text_t symbol) {
             obj.AppendText(symbol.Symbol.ToString());
             obj.SelectionStart = obj.TextLength - 1;
             obj.SelectionLength = 1;
             obj.SelectionBackColor = symbol.Color;
         }
-        void Show()//печатаем ShortText в текстбокс
+        void Show()//печатаем Text в текстбокс
         {
-            ShortTextFormObj.Clear();
+            config.tShortText.Clear();
             for (int i = 0; i < Text.Count && i < MaxLen; i++) {
-                FormObjAppendText(ShortTextFormObj, Text[i]);
+                FormObjAppendColorText(config.tShortText, Text[i]);
             }
         }
         void FullTextAddSymbol(Text_t symbol) {
-            FormObjAppendText(FullTextFormObj, symbol);
+            FormObjAppendColorText(config.tFullText, symbol);
         }
+        //-----------------------------------------------------
     }
     public class Generator {
         readonly string RuWords_FILE = $"{Environment.CurrentDirectory}\\dictionary\\ru.txt";
@@ -245,58 +253,11 @@ namespace KeyTeacher {
         string Words;
         Random random = new Random();
         Symbols symbols;
-        Config config;
-        public Generator(Config config, Symbols symbols) {
+        Typing.FormConfig_t config;
+        public Generator(Typing.FormConfig_t config, Symbols symbols) {
             this.symbols = symbols;
             this.config = config;
-            if (config.RU)
-                Words += File.ReadAllText(RuWords_FILE).Replace(" ", "") + ",";
-            if (config.EN)
-                Words += File.ReadAllText(EnWords_FILE).Replace(" ", "") + ",";
-        }
-        public string GetWord() {
-            int index = 0;
-            int count = 0;
-            int rand;
-            string word;
-            //--- выбираем нужный символ с учётом статистики ошибок ----------
-            rand = random.Next(Symbols.Sum(x => (int)x.PressDelay.Average()));
-            for (int i = 0; i < Symbols.Length; i++) {
-                if (count > rand)
-                    break;
-                count += (int)Symbols[i].PressDelay.Average();
-                index = i;
-            }
-            //--- ищем в словаре слово с нужным символом -------
-            if (Char.IsLetter(Symbols[index].Name)) {
-                var MatchWords = Regex.Matches(Words, $"\\w*{Symbols[index].Name.ToString().ToLower()}+\\w*");  //
-                if (MatchWords.Count > 0)
-                    word = MatchWords[random.Next(MatchWords.Count)].Value;
-                else
-                    word = Symbols[index].Name.ToString();
-            } else {
-                word = Symbols[index].Name.ToString();
-            }
-            //--- приводим к соответствующему регистру -------
-            if (Char.IsUpper(Symbols[index].Name))
-                return word.ToUpper();
-            else
-                return word;
-        }
-        string GetSymbol() {
-            int index = 0;
-            int count = 0;
-            int rand;
-            //--- выбираем нужный символ с учётом статистики ошибок ----------
-            rand = random.Next(Symbols.Sum(x => (int)x.PressDelay.Average()));
-            for (int i = 0; i < Symbols.Length; i++) {
-                if (count > rand)
-                    break;
-                count += (int)Symbols[i].PressDelay.Average();
-                index = i;
-            }
-            return Symbols[index].Name.ToString();
-
+            Init_Dictionary();
         }
         void Init_Dictionary() {
             if (config.RU)
@@ -304,8 +265,53 @@ namespace KeyTeacher {
             if (config.EN)
                 Words += File.ReadAllText(EnWords_FILE).Replace(" ", "") + ",";
         }
+        public string GetWord() {
+            switch (config.GenMode) {
+                case 0: //режим Word
+                    return GetWordByStatistic();
+                case 1: //режим Symbol
+                    return GetSymbolByStatistic().ToString();
+                default:
+                    return GetSymbolByStatistic().ToString();
+            }
+        }
+        string GetWordByStatistic() {
+            string word;
+            var s = symbols.SymbolList;
+            var Sym = GetSymbolByStatistic();   //выбираем нужный символ с учётом статистики ошибок
+                                                //--- ищем в словаре слово с нужным символом -------
+            if (Char.IsLetter(Sym)) {
+                var MatchWords = Regex.Matches(Words, $"\\w*{Sym.ToString().ToLower()}+\\w*");  //
+                if (MatchWords.Count > 0)
+                    word = MatchWords[random.Next(MatchWords.Count)].Value;
+                else
+                    word = Sym.ToString();
+            } else {
+                word = Sym.ToString();
+            }
+            //--- приводим к соответствующему регистру -------
+            if (Char.IsUpper(Sym))
+                return word.ToUpper();
+            else
+                return word;
+        }
+        char GetSymbolByStatistic() {
+            int index = 0;
+            int count = 0;
+            int rand;
+            var s = symbols.SymbolList;
+            rand = random.Next(s.Sum(x => (int)x.PressDelay.Average()));
+            for (int i = 0; i < s.Length; i++) {
+                if (count > rand)
+                    break;
+                count += (int)s[i].PressDelay.Average();
+                index = i;
+            }
+            return s[index].Name;
+        }
     }
     public class Symbols {
+        #region ---- ПЕРЕМЕННЫЕ --------------------------------
         public struct Symbol_t {
             public char Name;         //символ
             public int SuccessPress;    //счётчик успешных нажатий
@@ -318,13 +324,20 @@ namespace KeyTeacher {
         const string alphabetEN = "abcdefghijklmnopqrstuvwxyz";
         const string numbers = "0123456789";
         const string punctuation = ",.;:?!\"'[]{}()<>@#$%^&*-+=_|\\/~`";
-        Config config;
+        Typing.FormConfig_t config;
         int MaxPressDelay;
         int MinPressDelay;
-        public Symbols(Config config, int MaxPressDelay, int MinPressDelay) {
+        public Symbol_t[] SymbolList;
+        #endregion ---------------------------------------------
+
+        public Symbols(Typing.FormConfig_t config, int MaxPressDelay, int MinPressDelay) {
             this.config = config;
             this.MaxPressDelay = MaxPressDelay;
             this.MinPressDelay = MinPressDelay;
+            SymbolListInit();
+            FormInit();
+        }
+        void SymbolListInit() {
             string s = "";
             if (config.RU) {
                 s += alphabetRU;
@@ -342,21 +355,81 @@ namespace KeyTeacher {
                 s += numbers;
             if (config.PunctuationMarks)
                 s += punctuation;
-            var k = new Symbol_t[s.Length];
+            SymbolList = new Symbol_t[s.Length];
             for (int i = 0; i < s.Length; i++) {
-                k[i].Name = s[i];
-                k[i].SuccessPress = 1;
-                k[i].FailPress = 1;
-                k[i].PressDelay = Enumerable.Repeat(MinPressDelay, 10).ToList();
+                SymbolList[i].Name = s[i];
+                SymbolList[i].SuccessPress = 1;
+                SymbolList[i].FailPress = 1;
+                SymbolList[i].PressDelay = Enumerable.Repeat(MinPressDelay, 10).ToList();
+            }
+
+        }
+        void FormInit() {
+            var s = SymbolList;
+            for (int i = 0; i < s.Length; i++) {
+                //-- Label -----------
+                s[i].Lbl = new Label();
+                s[i].Lbl.Font = new Font("Arial", 8);
+                s[i].Lbl.Location = new Point(10, 22 * i);
+                s[i].Lbl.Size = new Size(30, 20);
+                s[i].Lbl.Margin = new Padding(0);
+                s[i].Lbl.Text = $"{s[i].Name}:";
+
+                //-- ProgressBar -----------
+                s[i].PBar = new ProgressBar();
+                s[i].PBar.Location = new Point(40, 22 * i);
+                s[i].PBar.Size = new Size(50, 20);
+                s[i].PBar.Margin = new Padding(0);
+                s[i].PBar.Maximum = MaxPressDelay;
+                s[i].PBar.Minimum = MinPressDelay;
+                s[i].PBar.Value = MinPressDelay;
+                //--- записываем в Symbols -----------------
+                config.tabStatistic.Controls.Add(s[i].Lbl);
+                config.tabStatistic.Controls.Add(s[i].PBar);
             }
         }
-        void PressDelayAppend(Symbol_t s, int delay)//добавляет delay в Symbols
-        {
-            var item = s.PressDelay;
-            for (int i = 1; i < item.Count; i++) {
-                item[i - 1] = item[i];
+        public void StatisticUpdate() //обновление статистики
+         {
+            for (int i = 0; i < SymbolList.Length; i++) {
+                //Symbols[i].PBar.Value = (SymbolList[i].FailPress * 100 + 1) / (SymbolList[i].SuccessPress + Symbols[i].FailPress + 1);
+                SymbolList[i].PBar.Value = StatisticCalc(SymbolList[i]);  //усреднённое время нескольких последних нажатий
             }
-            item[^1] = Between(delay, MinPressDelay, MaxPressDelay);
+        }
+        public void AddSuccessPress(char key) {
+            var s = GetSymbolByKey(key);
+            if (s.Name == key) {
+                s.SuccessPress++;
+            }
+        }
+        public void AddFailPress(char key) {
+            var s = GetSymbolByKey(key);
+            if (s.Name == key) {
+                s.FailPress++;
+                SetPressDelay(key, MaxPressDelay);
+            }
+        }
+        int StatisticCalc(Symbol_t symbol) {
+            return Between((int)symbol.PressDelay.Average(), MinPressDelay, MaxPressDelay);
+        }
+        public void SetPressDelay(char key, int delay)//добавляет delay в Symbols        
+        {
+            var s = GetSymbolByKey(key);
+            if (s.Name == key) {
+                var item = s.PressDelay;
+                for (int i = 1; i < item.Count; i++) {
+                    item[i - 1] = item[i];
+                }
+                item[^1] = Between(delay, MinPressDelay, MaxPressDelay);
+            }
+        }
+        Symbol_t GetSymbolByKey(char key) {
+            for (int i = 0; i < SymbolList.Length; i++)    //ищем нужный символ, прибавляем к счётчику
+                        {
+                if (SymbolList[i].Name == key) {
+                    return SymbolList[i];
+                }
+            }
+            return new Symbol_t();
         }
         int Between(int x, int min, int max)//возвращает значение ограниченное диапазоном
         {
@@ -380,54 +453,5 @@ namespace KeyTeacher {
             beep.Play();
             Thread.Sleep(33);
         }
-    }
-    public class Statistic {
-        TabPage FormObj;
-        public Statistic() {
-
-        }
-        void Init_StatisticForm()//создаёт элементы отображения статистики на форме
-        {
-            var s = Symbols;
-            for (int i = 0; i < s.Length; i++) {
-                //-- Label -----------
-                s[i].Lbl = new Label();
-                s[i].Lbl.Font = new Font("Arial", 8);
-                s[i].Lbl.Location = new Point(10, 22 * i);
-                s[i].Lbl.Size = new Size(30, 20);
-                s[i].Lbl.Margin = new Padding(0);
-                s[i].Lbl.Text = $"{s[i].Name}:";
-
-                //-- ProgressBar -----------
-                s[i].PBar = new ProgressBar();
-                s[i].PBar.Location = new Point(40, 22 * i);
-                s[i].PBar.Size = new Size(50, 20);
-                s[i].PBar.Margin = new Padding(0);
-                s[i].PBar.Maximum = MaxPressDelay;
-                s[i].PBar.Minimum = MinPressDelay;
-                s[i].PBar.Value = MinPressDelay;
-                //--- записываем в Symbols -----------------
-                StatisticFormObj.Controls.Add(s[i].Lbl);
-                StatisticFormObj.Controls.Add(s[i].PBar);
-            }
-        }
-        void UpdateStatistic() //обновление статистики
-        {
-            for (int i = 0; i < Symbols.Length; i++) {
-                //Symbols[i].PBar.Value = (Symbols[i].FailPress * 100 + 1) / (Symbols[i].SuccessPress + Symbols[i].FailPress + 1);
-                Symbols[i].PBar.Value = Between((int)Symbols[i].PressDelay.Average(), MinPressDelay, MaxPressDelay);//усреднённое время нескольких последних нажатий
-            }
-        }
-    }
-    public class Config {
-        public bool WaitSuccessPress;    //ждать успешное нажатие
-        public bool EN;
-        public bool RU;
-        public bool PunctuationMarks;    //занки препинания
-        public bool Numbers;     //числа
-        public bool Upper;       //заглавные
-        public byte GenMode;    //режим генерации
-        public bool MetronomeEnabled;
-        public int MetronomePeriod;
     }
 }
