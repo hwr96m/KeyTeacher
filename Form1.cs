@@ -32,7 +32,7 @@ namespace KeyTeacher {
         public Form1() {
             InitializeComponent();
             typing = new Typing();
-            comboGenMode.SelectedIndex = 0;
+            comboGenMode.SelectedIndex = 1;
             SetConfig();
         }
         void Form1_KeyPress(object sender, KeyPressEventArgs e) {
