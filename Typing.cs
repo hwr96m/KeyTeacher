@@ -174,18 +174,18 @@ namespace KeyTeacher {
             }
         }
         public void KeyPress(char key) {
-            if (key == GetCurrentSymbol() && ((!metronome.Early && !metronome.Late) || !metronome.isStarted)) {
-                SuccessPress(key);
+            var symbol = GetCurrentSymbol();
+            if (key == symbol && ((!metronome.Early && !metronome.Late) || !metronome.isStarted)) {
+                SuccessPress(symbol);
             } else {
-                FailPress(key);
+                FailPress(symbol);
             }
         }
-        void SuccessPress(char key) {
+        void SuccessPress(char symbol) {
             if (!CurrentSymbolIsHandled)//текущий символ еще не обработан
             {
-                symbols.AddSuccessPress(key);
+                symbols.AddSuccessPress(symbol, (int)timer.ElapsedMilliseconds);
                 symbols.StatisticUpdate();
-                symbols.SetPressDelay(key, (int)timer.ElapsedMilliseconds);
                 CurrentSymbolSetColor(SuccessColor);
                 FullTextAddSymbol(Text[CurrentSymbol]);
             }
@@ -195,10 +195,10 @@ namespace KeyTeacher {
             AddText();
             Show();
         }
-        void FailPress(char key) {
+        void FailPress(char symbol) {
             if (!CurrentSymbolIsHandled)    //текущий символ еще не обработан
             {
-                symbols.AddFailPress(key);
+                symbols.AddFailPress(symbol);
                 symbols.StatisticUpdate();
                 CurrentSymbolSetColor(FailColor);
                 FullTextAddSymbol(Text[CurrentSymbol]);
@@ -248,12 +248,14 @@ namespace KeyTeacher {
         //-----------------------------------------------------
     }
     public class Generator {
+        #region --- Данные -------------------------------------------------------------------
         readonly string RuWords_FILE = $"{Environment.CurrentDirectory}\\dictionary\\ru.txt";
         readonly string EnWords_FILE = $"{Environment.CurrentDirectory}\\dictionary\\en.txt";
         string Words;
         Random random = new Random();
         Symbols symbols;
-        Typing.FormConfig_t config;
+        Typing.FormConfig_t config;            
+        #endregion ---------------------------------------------------------------------------
         public Generator(Typing.FormConfig_t config, Symbols symbols) {
             this.symbols = symbols;
             this.config = config;
@@ -268,7 +270,7 @@ namespace KeyTeacher {
         public string GetWord() {
             switch (config.GenMode) {
                 case 0: //режим Word
-                    return GetWordByStatistic();
+                    return GetWordByStatistic()+" ";
                 case 1: //режим Symbol
                     return GetSymbolByStatistic().ToString();
                 default:
@@ -365,6 +367,7 @@ namespace KeyTeacher {
 
         }
         void FormInit() {
+            config.tabStatistic.Controls.Clear();
             var s = SymbolList;
             for (int i = 0; i < s.Length; i++) {
                 //-- Label -----------
@@ -395,26 +398,27 @@ namespace KeyTeacher {
                 SymbolList[i].PBar.Value = StatisticCalc(SymbolList[i]);  //усреднённое время нескольких последних нажатий
             }
         }
-        public void AddSuccessPress(char key) {
-            var s = GetSymbolByKey(key);
-            if (s.Name == key) {
+        public void AddSuccessPress(char symbol, int delay) {
+            var s = GetSymbolByName(symbol);
+            if (s.Name == symbol) {
                 s.SuccessPress++;
+                SetPressDelay(symbol, delay);
             }
         }
-        public void AddFailPress(char key) {
-            var s = GetSymbolByKey(key);
-            if (s.Name == key) {
+        public void AddFailPress(char symbol) {
+            var s = GetSymbolByName(symbol);
+            if (s.Name == symbol) {
                 s.FailPress++;
-                SetPressDelay(key, MaxPressDelay);
+                SetPressDelay(symbol, MaxPressDelay);
             }
         }
         int StatisticCalc(Symbol_t symbol) {
             return Between((int)symbol.PressDelay.Average(), MinPressDelay, MaxPressDelay);
         }
-        public void SetPressDelay(char key, int delay)//добавляет delay в Symbols        
+        public void SetPressDelay(char symbol, int delay)//добавляет delay в Symbols        
         {
-            var s = GetSymbolByKey(key);
-            if (s.Name == key) {
+            var s = GetSymbolByName(symbol);
+            if (s.Name == symbol) {
                 var item = s.PressDelay;
                 for (int i = 1; i < item.Count; i++) {
                     item[i - 1] = item[i];
@@ -422,10 +426,10 @@ namespace KeyTeacher {
                 item[^1] = Between(delay, MinPressDelay, MaxPressDelay);
             }
         }
-        Symbol_t GetSymbolByKey(char key) {
+        Symbol_t GetSymbolByName(char symbol) {
             for (int i = 0; i < SymbolList.Length; i++)    //ищем нужный символ, прибавляем к счётчику
                         {
-                if (SymbolList[i].Name == key) {
+                if (SymbolList[i].Name == symbol) {
                     return SymbolList[i];
                 }
             }
