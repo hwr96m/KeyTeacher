@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\c#\\KeyTeacher\\KeyTeacher.csproj",
+      "projectUniqueName": "E:\\CSharp\\KeyTeacher\\KeyTeacher.csproj",
       "projectName": "KeyTeacher",
-      "projectPath": "E:\\c#\\KeyTeacher\\KeyTeacher.csproj",
+      "projectPath": "E:\\CSharp\\KeyTeacher\\KeyTeacher.csproj",
       "packagesPath": "D:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "E:\\c#\\KeyTeacher\\obj\\",
+      "outputPath": "E:\\CSharp\\KeyTeacher\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "D:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -28,7 +28,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "http://packages.nuget.org/v1/FeedService.svc": {}
       },
       "frameworks": {
         "netcoreapp3.1": {

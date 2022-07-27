@@ -10,14 +10,15 @@ using System.Threading;
 using System.Windows.Forms;
 
 namespace KeyTeacher {
-    public partial class Form1 : Form {
+    public partial class Form1 : Form {        
         Typing typing;
         void SetConfig() {
             typing.FormConfig.tShortText = tboxShortText;
             typing.FormConfig.tFullText = tboxFullText;
             typing.FormConfig.tabStatistic = tabStatistic;
             typing.FormConfig.tabConfig = tabConfig;
-            typing.FormConfig.bStartStop = bStartStop;
+            typing.FormConfig.bStart = bStart;
+            typing.FormConfig.bStop = bStop;
 
             typing.FormConfig.Upper = confUpper.Checked;
             typing.FormConfig.Numbers = confNumbers.Checked;
@@ -38,18 +39,17 @@ namespace KeyTeacher {
         void Form1_KeyPress(object sender, KeyPressEventArgs e) {
             typing.KeyPressHandler(e.KeyChar);
         }
-        private void bStartStop_Click(object sender, EventArgs e) {
-            if (bStartStop.Text == "Start") {
-                bStartStop.Text = "Stop";
-                typing.Start();
-                SetConfig();
-                return;
-            }
-            if (bStartStop.Text == "Stop") {
-                bStartStop.Text = "Start";
-                typing.Stop();
-                return;
-            }
+        private void bStart_Click(object sender, EventArgs e) {
+            bStart.Enabled = false;
+            bStop.Enabled = true;
+            typing.Start();
+            label2.Focus();
+        }
+        private void bStop_Click(object sender, EventArgs e) {
+            bStart.Enabled = true;
+            bStop.Enabled = false;
+            typing.Stop();
+            label2.Focus();
         }
 
         #region ---- вкладка Config ---------------
@@ -102,32 +102,3 @@ namespace KeyTeacher {
     }
 }
 
-/*
- Task.Run(() =>
-             {
-                while (StartFlag)
-                {
-                     char CurSymbol = typing.GetCurrentSymbol();
-                    if (key != (char)0 && key == CurSymbol)
-                    {
-                        this.Invoke(new Action(() =>
-                        {
-                            AddText(tboxFullText, CurSymbol.ToString(), typing.SuccessColor);
-                            typing.AddSuccessPress(tboxShortText, CurSymbol);
-                        }));
-                        key = (char)0;
-                    }
-                    if (key != (char)0 && key != CurSymbol)
-                    {
-                        this.Invoke(new Action(() =>
-                        {
-                            AddText(tboxFullText, CurSymbol.ToString(), typing.FailColor);
-                            typing.AddFailPress(tboxShortText, CurSymbol);
-                        }));
-                        key = (char)0;
-                    }
-                    Thread.Sleep(50);
-                }
-            });
-
-*/

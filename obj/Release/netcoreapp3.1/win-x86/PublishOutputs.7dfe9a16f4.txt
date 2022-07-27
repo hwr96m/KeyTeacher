@@ -1,0 +1,2 @@
+E:\CSharp\KeyTeacher\bin\publish\win-x86\KeyTeacher.pdb
+E:\CSharp\KeyTeacher\bin\publish\win-x86\KeyTeacher.exe

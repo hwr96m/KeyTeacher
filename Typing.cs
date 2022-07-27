@@ -19,7 +19,8 @@ namespace KeyTeacher {
             public RichTextBox tFullText;
             public TabPage tabStatistic;
             public TabPage tabConfig;
-            public Button bStartStop;
+            public Button bStart;
+            public Button bStop;
             public bool WaitSuccessPress;    //ждать успешное нажатие
             public bool EN;
             public bool RU;
@@ -57,7 +58,7 @@ namespace KeyTeacher {
             symbols = new Symbols(FormConfig, MaxPressDelay, MinPressDelay);
             generator = new Generator(FormConfig, symbols);
             metronome = new Metronome(FormConfig);
-            printer = new Printer(FormConfig, generator, metronome, symbols, MaxPressDelay);
+            printer = new Printer(FormConfig, generator, metronome, symbols, MinPressDelay, MaxPressDelay);
             if (metronome.Enabled) {
                 metronome.Start();
             }
@@ -66,6 +67,7 @@ namespace KeyTeacher {
         {
             TypingStart = false;
             metronome.Stop();
+            FormConfig.tShortText.Clear();
         }
     }
     public class Metronome {
@@ -122,6 +124,7 @@ namespace KeyTeacher {
         Metronome metronome;
         Symbols symbols;
         int MaxPressDelay;
+        int MinPressDelay;
         List<Text_t> Text;    //бегущая строка с печатаемым текстом
         int CurrentSymbol = 0;
         public bool CurrentSymbolIsHandled = false;        //текущий символ уже обработан
@@ -135,12 +138,13 @@ namespace KeyTeacher {
         #endregion --------------------------------------------
 
         //------ Функции ---------------------------------------
-        public Printer(Typing.FormConfig_t config, Generator generator, Metronome metronome, Symbols symbols, int MaxPressDelay) {
+        public Printer(Typing.FormConfig_t config, Generator generator, Metronome metronome, Symbols symbols, int MinPressDelay, int MaxPressDelay) {
             this.config = config;
             this.generator = generator;
             this.metronome = metronome;
             this.symbols = symbols;
             this.MaxPressDelay = MaxPressDelay;
+            this.MinPressDelay = MinPressDelay;
             TextInit();
             Show();
             timer.Restart();
@@ -184,7 +188,11 @@ namespace KeyTeacher {
         void SuccessPress(char symbol) {
             if (!CurrentSymbolIsHandled)//текущий символ еще не обработан
             {
-                symbols.AddSuccessPress(symbol, (int)timer.ElapsedMilliseconds);
+                if(config.MetronomeEnabled) {       //если включен метроном
+                    symbols.AddSuccessPress(symbol, MinPressDelay); //задаём успешное нажатие с минимальным временем
+                } else {
+                    symbols.AddSuccessPress(symbol, (int)timer.ElapsedMilliseconds);    //задаём успешное нажатие с фактическим временем
+                }
                 symbols.StatisticUpdate();
                 CurrentSymbolSetColor(SuccessColor);
                 FullTextAddSymbol(Text[CurrentSymbol]);
@@ -445,8 +453,8 @@ namespace KeyTeacher {
         }
     }
     static class Sound {
-        static readonly string TICK_FILE = $"{Environment.CurrentDirectory}\\metronome.wav";
-        static readonly string BEEP_FILE = $"{Environment.CurrentDirectory}\\beep_3.wav";
+        static readonly string TICK_FILE = @$"{Environment.CurrentDirectory}\sound\metronome.wav";
+        static readonly string BEEP_FILE = @$"{Environment.CurrentDirectory}\sound\beep_3.wav";
         public static void Beep() {
             var beep = new SoundPlayer(BEEP_FILE);
             beep.Play();

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "SyBPuVhmuQ+dYWIcBMncts6V/hDkuuKE41vKo3tJTWxPhOGPD0AmlZD0cvCDB0Siw1/kSt3yo7oYXQhrbzYvHg==",
+  "dgSpecHash": "LGVEA0Tx9vIC/H9ZSi/xcHAlmram7A86RT5yls6+ZYNRLhLC1b+Ry9a5wNF4A1WtfSTkFAi/hAWtVCAd2XjKQQ==",
   "success": true,
-  "projectFilePath": "E:\\c#\\KeyTeacher\\KeyTeacher.csproj",
+  "projectFilePath": "E:\\CSharp\\KeyTeacher\\KeyTeacher.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

@@ -1,0 +1,9 @@
+E:\CSharp\KeyTeacher\bin\Release\netcoreapp3.1\publish\beep_3.wav
+E:\CSharp\KeyTeacher\bin\Release\netcoreapp3.1\publish\dictionary\en.txt
+E:\CSharp\KeyTeacher\bin\Release\netcoreapp3.1\publish\dictionary\ru.txt
+E:\CSharp\KeyTeacher\bin\Release\netcoreapp3.1\publish\metronome.wav
+E:\CSharp\KeyTeacher\bin\Release\netcoreapp3.1\publish\KeyTeacher.exe
+E:\CSharp\KeyTeacher\bin\Release\netcoreapp3.1\publish\KeyTeacher.dll
+E:\CSharp\KeyTeacher\bin\Release\netcoreapp3.1\publish\KeyTeacher.deps.json
+E:\CSharp\KeyTeacher\bin\Release\netcoreapp3.1\publish\KeyTeacher.runtimeconfig.json
+E:\CSharp\KeyTeacher\bin\Release\netcoreapp3.1\publish\KeyTeacher.pdb

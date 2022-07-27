@@ -41,9 +41,11 @@ namespace KeyTeacher {
             this.confNumbers = new System.Windows.Forms.CheckBox();
             this.confUpper = new System.Windows.Forms.CheckBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.bStop = new System.Windows.Forms.Button();
             this.tboxShortText = new System.Windows.Forms.RichTextBox();
-            this.bStartStop = new System.Windows.Forms.Button();
+            this.bStart = new System.Windows.Forms.Button();
             this.tboxFullText = new System.Windows.Forms.RichTextBox();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -73,8 +75,8 @@ namespace KeyTeacher {
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1998, 965);
-            this.splitContainer1.SplitterDistance = 386;
+            this.splitContainer1.Size = new System.Drawing.Size(1646, 652);
+            this.splitContainer1.SplitterDistance = 388;
             this.splitContainer1.TabIndex = 0;
             // 
             // tabControl1
@@ -85,8 +87,8 @@ namespace KeyTeacher {
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(382, 961);
-            this.tabControl1.TabIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(384, 648);
+            this.tabControl1.TabIndex = 2;
             // 
             // tabStatistic
             // 
@@ -94,9 +96,9 @@ namespace KeyTeacher {
             this.tabStatistic.Location = new System.Drawing.Point(4, 39);
             this.tabStatistic.Name = "tabStatistic";
             this.tabStatistic.Padding = new System.Windows.Forms.Padding(3);
-            this.tabStatistic.Size = new System.Drawing.Size(374, 918);
+            this.tabStatistic.Size = new System.Drawing.Size(376, 605);
             this.tabStatistic.TabIndex = 0;
-            this.tabStatistic.Text = "Статистика";
+            this.tabStatistic.Text = "Статистика ошибок";
             this.tabStatistic.UseVisualStyleBackColor = true;
             // 
             // tabConfig
@@ -116,7 +118,7 @@ namespace KeyTeacher {
             this.tabConfig.Location = new System.Drawing.Point(4, 39);
             this.tabConfig.Name = "tabConfig";
             this.tabConfig.Padding = new System.Windows.Forms.Padding(3);
-            this.tabConfig.Size = new System.Drawing.Size(374, 918);
+            this.tabConfig.Size = new System.Drawing.Size(376, 605);
             this.tabConfig.TabIndex = 1;
             this.tabConfig.Text = "Настройки";
             this.tabConfig.UseVisualStyleBackColor = true;
@@ -127,7 +129,7 @@ namespace KeyTeacher {
             this.lblMetronomeDelay.Location = new System.Drawing.Point(159, 359);
             this.lblMetronomeDelay.Name = "lblMetronomeDelay";
             this.lblMetronomeDelay.Size = new System.Drawing.Size(95, 30);
-            this.lblMetronomeDelay.TabIndex = 10;
+            this.lblMetronomeDelay.TabIndex = 12;
             this.lblMetronomeDelay.Text = "1000 ms";
             // 
             // trackMetronomeDelay
@@ -138,7 +140,7 @@ namespace KeyTeacher {
             this.trackMetronomeDelay.Minimum = 300;
             this.trackMetronomeDelay.Name = "trackMetronomeDelay";
             this.trackMetronomeDelay.Size = new System.Drawing.Size(362, 69);
-            this.trackMetronomeDelay.TabIndex = 9;
+            this.trackMetronomeDelay.TabIndex = 13;
             this.trackMetronomeDelay.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trackMetronomeDelay.Value = 1000;
             this.trackMetronomeDelay.ValueChanged += new System.EventHandler(this.trackMetronomeDelay_ValueChanged);
@@ -149,7 +151,7 @@ namespace KeyTeacher {
             this.checkMetronome.Location = new System.Drawing.Point(6, 358);
             this.checkMetronome.Name = "checkMetronome";
             this.checkMetronome.Size = new System.Drawing.Size(147, 34);
-            this.checkMetronome.TabIndex = 8;
+            this.checkMetronome.TabIndex = 11;
             this.checkMetronome.Text = "Метроном";
             this.checkMetronome.UseVisualStyleBackColor = true;
             this.checkMetronome.Click += new System.EventHandler(this.checkMetronome_Click);
@@ -160,7 +162,7 @@ namespace KeyTeacher {
             this.label1.Location = new System.Drawing.Point(6, 23);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(263, 30);
-            this.label1.TabIndex = 7;
+            this.label1.TabIndex = 3;
             this.label1.Text = "Режим генерации текста";
             // 
             // comboGenMode
@@ -172,7 +174,7 @@ namespace KeyTeacher {
             this.comboGenMode.Location = new System.Drawing.Point(6, 61);
             this.comboGenMode.Name = "comboGenMode";
             this.comboGenMode.Size = new System.Drawing.Size(321, 38);
-            this.comboGenMode.TabIndex = 6;
+            this.comboGenMode.TabIndex = 4;
             this.comboGenMode.Tag = "";
             this.comboGenMode.SelectedIndexChanged += new System.EventHandler(this.comboGenMode_SelectedIndexChanged);
             // 
@@ -182,7 +184,7 @@ namespace KeyTeacher {
             this.confWaitSuccessPress.Location = new System.Drawing.Point(6, 308);
             this.confWaitSuccessPress.Name = "confWaitSuccessPress";
             this.confWaitSuccessPress.Size = new System.Drawing.Size(321, 34);
-            this.confWaitSuccessPress.TabIndex = 5;
+            this.confWaitSuccessPress.TabIndex = 10;
             this.confWaitSuccessPress.Text = "Ждать правильное нажатие";
             this.confWaitSuccessPress.UseVisualStyleBackColor = true;
             this.confWaitSuccessPress.Click += new System.EventHandler(this.confWaitSuccessPress_Click);
@@ -193,7 +195,7 @@ namespace KeyTeacher {
             this.confEN.Location = new System.Drawing.Point(6, 265);
             this.confEN.Name = "confEN";
             this.confEN.Size = new System.Drawing.Size(66, 34);
-            this.confEN.TabIndex = 4;
+            this.confEN.TabIndex = 9;
             this.confEN.Text = "EN";
             this.confEN.UseVisualStyleBackColor = true;
             this.confEN.Click += new System.EventHandler(this.confEN_Click);
@@ -206,7 +208,7 @@ namespace KeyTeacher {
             this.confRU.Location = new System.Drawing.Point(6, 225);
             this.confRU.Name = "confRU";
             this.confRU.Size = new System.Drawing.Size(67, 34);
-            this.confRU.TabIndex = 3;
+            this.confRU.TabIndex = 8;
             this.confRU.Text = "RU";
             this.confRU.UseVisualStyleBackColor = true;
             this.confRU.Click += new System.EventHandler(this.confRU_Click);
@@ -217,7 +219,7 @@ namespace KeyTeacher {
             this.confPunctuationMarks.Location = new System.Drawing.Point(6, 185);
             this.confPunctuationMarks.Name = "confPunctuationMarks";
             this.confPunctuationMarks.Size = new System.Drawing.Size(230, 34);
-            this.confPunctuationMarks.TabIndex = 2;
+            this.confPunctuationMarks.TabIndex = 7;
             this.confPunctuationMarks.Text = "Знаки препинания";
             this.confPunctuationMarks.UseVisualStyleBackColor = true;
             this.confPunctuationMarks.Click += new System.EventHandler(this.confPunctuationMarks_Click);
@@ -228,7 +230,7 @@ namespace KeyTeacher {
             this.confNumbers.Location = new System.Drawing.Point(6, 145);
             this.confNumbers.Name = "confNumbers";
             this.confNumbers.Size = new System.Drawing.Size(112, 34);
-            this.confNumbers.TabIndex = 1;
+            this.confNumbers.TabIndex = 6;
             this.confNumbers.Text = "Цифры";
             this.confNumbers.UseVisualStyleBackColor = true;
             this.confNumbers.Click += new System.EventHandler(this.confNumbers_Click);
@@ -239,7 +241,7 @@ namespace KeyTeacher {
             this.confUpper.Location = new System.Drawing.Point(6, 105);
             this.confUpper.Name = "confUpper";
             this.confUpper.Size = new System.Drawing.Size(215, 34);
-            this.confUpper.TabIndex = 0;
+            this.confUpper.TabIndex = 5;
             this.confUpper.Text = "Заглавные буквы";
             this.confUpper.UseVisualStyleBackColor = true;
             this.confUpper.Click += new System.EventHandler(this.confUpper_Click);
@@ -255,16 +257,29 @@ namespace KeyTeacher {
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.label2);
+            this.splitContainer2.Panel1.Controls.Add(this.bStop);
             this.splitContainer2.Panel1.Controls.Add(this.tboxShortText);
-            this.splitContainer2.Panel1.Controls.Add(this.bStartStop);
+            this.splitContainer2.Panel1.Controls.Add(this.bStart);
             this.splitContainer2.Panel1.Cursor = System.Windows.Forms.Cursors.Default;
             // 
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tboxFullText);
-            this.splitContainer2.Size = new System.Drawing.Size(1608, 965);
-            this.splitContainer2.SplitterDistance = 261;
+            this.splitContainer2.Size = new System.Drawing.Size(1254, 652);
+            this.splitContainer2.SplitterDistance = 176;
             this.splitContainer2.TabIndex = 1;
+            // 
+            // bStop
+            // 
+            this.bStop.Enabled = false;
+            this.bStop.Location = new System.Drawing.Point(1105, 96);
+            this.bStop.Name = "bStop";
+            this.bStop.Size = new System.Drawing.Size(112, 34);
+            this.bStop.TabIndex = 0;
+            this.bStop.Text = "Stop";
+            this.bStop.UseVisualStyleBackColor = true;
+            this.bStop.Click += new System.EventHandler(this.bStop_Click);
             // 
             // tboxShortText
             // 
@@ -272,40 +287,49 @@ namespace KeyTeacher {
             this.tboxShortText.Font = new System.Drawing.Font("Consolas", 48F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.tboxShortText.Location = new System.Drawing.Point(15, 29);
             this.tboxShortText.Name = "tboxShortText";
-            this.tboxShortText.Size = new System.Drawing.Size(1427, 168);
-            this.tboxShortText.TabIndex = 3;
+            this.tboxShortText.Size = new System.Drawing.Size(1070, 117);
+            this.tboxShortText.TabIndex = 0;
             this.tboxShortText.Text = "";
             // 
-            // bStartStop
+            // bStart
             // 
-            this.bStartStop.Location = new System.Drawing.Point(1463, 29);
-            this.bStartStop.Name = "bStartStop";
-            this.bStartStop.Size = new System.Drawing.Size(112, 34);
-            this.bStartStop.TabIndex = 1;
-            this.bStartStop.Text = "Start";
-            this.bStartStop.UseVisualStyleBackColor = true;
-            this.bStartStop.Click += new System.EventHandler(this.bStartStop_Click);
+            this.bStart.Location = new System.Drawing.Point(1105, 29);
+            this.bStart.Name = "bStart";
+            this.bStart.Size = new System.Drawing.Size(112, 34);
+            this.bStart.TabIndex = 0;
+            this.bStart.Text = "Start";
+            this.bStart.UseVisualStyleBackColor = true;
+            this.bStart.Click += new System.EventHandler(this.bStart_Click);
             // 
             // tboxFullText
             // 
             this.tboxFullText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.tboxFullText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tboxFullText.Enabled = false;
+            this.tboxFullText.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.tboxFullText.Location = new System.Drawing.Point(0, 0);
             this.tboxFullText.Name = "tboxFullText";
-            this.tboxFullText.Size = new System.Drawing.Size(1604, 696);
-            this.tboxFullText.TabIndex = 0;
+            this.tboxFullText.Size = new System.Drawing.Size(1250, 468);
+            this.tboxFullText.TabIndex = 1;
             this.tboxFullText.Text = "";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(1124, 138);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(0, 30);
+            this.label2.TabIndex = 1;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 30F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1998, 965);
+            this.ClientSize = new System.Drawing.Size(1646, 652);
             this.Controls.Add(this.splitContainer1);
             this.KeyPreview = true;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "KeyTeacher";
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Form1_KeyPress);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -316,6 +340,7 @@ namespace KeyTeacher {
             this.tabConfig.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackMetronomeDelay)).EndInit();
             this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel1.PerformLayout();
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
@@ -326,7 +351,7 @@ namespace KeyTeacher {
         #endregion
 
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.Button bStartStop;
+        private System.Windows.Forms.Button bStart;
         private System.Windows.Forms.RichTextBox tboxFullText;
         private System.Windows.Forms.RichTextBox tboxShortText;
         private System.Windows.Forms.SplitContainer splitContainer2;
@@ -344,6 +369,8 @@ namespace KeyTeacher {
         private System.Windows.Forms.TrackBar trackMetronomeDelay;
         private System.Windows.Forms.CheckBox checkMetronome;
         private System.Windows.Forms.Label lblMetronomeDelay;
+        private System.Windows.Forms.Button bStop;
+        private System.Windows.Forms.Label label2;
     }
 }
 
