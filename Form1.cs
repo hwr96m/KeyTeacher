@@ -8,10 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Forms;
+using System.IO;
 
 namespace KeyTeacher {
     public partial class Form1 : Form {        
-        Typing typing;
+        Typing typing; 
+
+        readonly string CustomCollection_FILE = $"{Environment.CurrentDirectory}\\dictionary\\custom_collection.txt";
         void SetConfig() {
             typing.FormConfig.tShortText = tboxShortText;
             typing.FormConfig.tFullText = tboxFullText;
@@ -34,6 +37,8 @@ namespace KeyTeacher {
             InitializeComponent();
             typing = new Typing();
             comboGenMode.SelectedIndex = 1;
+            CustomCollectionCombo.Items.AddRange(File.ReadAllText(CustomCollection_FILE).Replace("\r","").Split("\n"));  //добавляем свой набор символов в комбобокс
+            CustomCollectionCombo.SelectedIndex = 0;    
             SetConfig();
         }
         void Form1_KeyPress(object sender, KeyPressEventArgs e) {
@@ -99,6 +104,10 @@ namespace KeyTeacher {
         }
         #endregion
 
+        private void CustomCollectionCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            typing.FormConfig.CustomCollection = CustomCollectionCombo.Text;
+        }
     }
 }
 

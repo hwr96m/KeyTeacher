@@ -29,6 +29,7 @@ namespace KeyTeacher {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabStatistic = new System.Windows.Forms.TabPage();
             this.tabConfig = new System.Windows.Forms.TabPage();
+            this.CustomCollectionCombo = new System.Windows.Forms.ComboBox();
             this.lblMetronomeDelay = new System.Windows.Forms.Label();
             this.trackMetronomeDelay = new System.Windows.Forms.TrackBar();
             this.checkMetronome = new System.Windows.Forms.CheckBox();
@@ -41,11 +42,11 @@ namespace KeyTeacher {
             this.confNumbers = new System.Windows.Forms.CheckBox();
             this.confUpper = new System.Windows.Forms.CheckBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.label2 = new System.Windows.Forms.Label();
             this.bStop = new System.Windows.Forms.Button();
             this.tboxShortText = new System.Windows.Forms.RichTextBox();
             this.bStart = new System.Windows.Forms.Button();
             this.tboxFullText = new System.Windows.Forms.RichTextBox();
-            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -104,6 +105,7 @@ namespace KeyTeacher {
             // tabConfig
             // 
             this.tabConfig.AutoScroll = true;
+            this.tabConfig.Controls.Add(this.CustomCollectionCombo);
             this.tabConfig.Controls.Add(this.lblMetronomeDelay);
             this.tabConfig.Controls.Add(this.trackMetronomeDelay);
             this.tabConfig.Controls.Add(this.checkMetronome);
@@ -123,10 +125,19 @@ namespace KeyTeacher {
             this.tabConfig.Text = "Настройки";
             this.tabConfig.UseVisualStyleBackColor = true;
             // 
+            // CustomCollectionCombo
+            // 
+            this.CustomCollectionCombo.FormattingEnabled = true;
+            this.CustomCollectionCombo.Location = new System.Drawing.Point(3, 116);
+            this.CustomCollectionCombo.Name = "CustomCollectionCombo";
+            this.CustomCollectionCombo.Size = new System.Drawing.Size(324, 38);
+            this.CustomCollectionCombo.TabIndex = 14;
+            this.CustomCollectionCombo.SelectedIndexChanged += new System.EventHandler(this.CustomCollectionCombo_SelectedIndexChanged);
+            // 
             // lblMetronomeDelay
             // 
             this.lblMetronomeDelay.AutoSize = true;
-            this.lblMetronomeDelay.Location = new System.Drawing.Point(159, 359);
+            this.lblMetronomeDelay.Location = new System.Drawing.Point(159, 414);
             this.lblMetronomeDelay.Name = "lblMetronomeDelay";
             this.lblMetronomeDelay.Size = new System.Drawing.Size(95, 30);
             this.lblMetronomeDelay.TabIndex = 12;
@@ -135,7 +146,7 @@ namespace KeyTeacher {
             // trackMetronomeDelay
             // 
             this.trackMetronomeDelay.Enabled = false;
-            this.trackMetronomeDelay.Location = new System.Drawing.Point(6, 398);
+            this.trackMetronomeDelay.Location = new System.Drawing.Point(6, 453);
             this.trackMetronomeDelay.Maximum = 2000;
             this.trackMetronomeDelay.Minimum = 300;
             this.trackMetronomeDelay.Name = "trackMetronomeDelay";
@@ -148,7 +159,7 @@ namespace KeyTeacher {
             // checkMetronome
             // 
             this.checkMetronome.AutoSize = true;
-            this.checkMetronome.Location = new System.Drawing.Point(6, 358);
+            this.checkMetronome.Location = new System.Drawing.Point(6, 413);
             this.checkMetronome.Name = "checkMetronome";
             this.checkMetronome.Size = new System.Drawing.Size(147, 34);
             this.checkMetronome.TabIndex = 11;
@@ -170,7 +181,8 @@ namespace KeyTeacher {
             this.comboGenMode.FormattingEnabled = true;
             this.comboGenMode.Items.AddRange(new object[] {
             "Word",
-            "Symbol"});
+            "Symbol",
+            "Custom"});
             this.comboGenMode.Location = new System.Drawing.Point(6, 61);
             this.comboGenMode.Name = "comboGenMode";
             this.comboGenMode.Size = new System.Drawing.Size(321, 38);
@@ -181,7 +193,7 @@ namespace KeyTeacher {
             // confWaitSuccessPress
             // 
             this.confWaitSuccessPress.AutoSize = true;
-            this.confWaitSuccessPress.Location = new System.Drawing.Point(6, 308);
+            this.confWaitSuccessPress.Location = new System.Drawing.Point(6, 363);
             this.confWaitSuccessPress.Name = "confWaitSuccessPress";
             this.confWaitSuccessPress.Size = new System.Drawing.Size(321, 34);
             this.confWaitSuccessPress.TabIndex = 10;
@@ -192,7 +204,7 @@ namespace KeyTeacher {
             // confEN
             // 
             this.confEN.AutoSize = true;
-            this.confEN.Location = new System.Drawing.Point(6, 265);
+            this.confEN.Location = new System.Drawing.Point(6, 320);
             this.confEN.Name = "confEN";
             this.confEN.Size = new System.Drawing.Size(66, 34);
             this.confEN.TabIndex = 9;
@@ -205,7 +217,7 @@ namespace KeyTeacher {
             this.confRU.AutoSize = true;
             this.confRU.Checked = true;
             this.confRU.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.confRU.Location = new System.Drawing.Point(6, 225);
+            this.confRU.Location = new System.Drawing.Point(6, 280);
             this.confRU.Name = "confRU";
             this.confRU.Size = new System.Drawing.Size(67, 34);
             this.confRU.TabIndex = 8;
@@ -216,7 +228,7 @@ namespace KeyTeacher {
             // confPunctuationMarks
             // 
             this.confPunctuationMarks.AutoSize = true;
-            this.confPunctuationMarks.Location = new System.Drawing.Point(6, 185);
+            this.confPunctuationMarks.Location = new System.Drawing.Point(6, 240);
             this.confPunctuationMarks.Name = "confPunctuationMarks";
             this.confPunctuationMarks.Size = new System.Drawing.Size(230, 34);
             this.confPunctuationMarks.TabIndex = 7;
@@ -227,7 +239,7 @@ namespace KeyTeacher {
             // confNumbers
             // 
             this.confNumbers.AutoSize = true;
-            this.confNumbers.Location = new System.Drawing.Point(6, 145);
+            this.confNumbers.Location = new System.Drawing.Point(6, 200);
             this.confNumbers.Name = "confNumbers";
             this.confNumbers.Size = new System.Drawing.Size(112, 34);
             this.confNumbers.TabIndex = 6;
@@ -238,7 +250,7 @@ namespace KeyTeacher {
             // confUpper
             // 
             this.confUpper.AutoSize = true;
-            this.confUpper.Location = new System.Drawing.Point(6, 105);
+            this.confUpper.Location = new System.Drawing.Point(6, 160);
             this.confUpper.Name = "confUpper";
             this.confUpper.Size = new System.Drawing.Size(215, 34);
             this.confUpper.TabIndex = 5;
@@ -269,6 +281,14 @@ namespace KeyTeacher {
             this.splitContainer2.Size = new System.Drawing.Size(1254, 652);
             this.splitContainer2.SplitterDistance = 176;
             this.splitContainer2.TabIndex = 1;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(1124, 138);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(0, 30);
+            this.label2.TabIndex = 1;
             // 
             // bStop
             // 
@@ -312,14 +332,6 @@ namespace KeyTeacher {
             this.tboxFullText.Size = new System.Drawing.Size(1250, 468);
             this.tboxFullText.TabIndex = 1;
             this.tboxFullText.Text = "";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(1124, 138);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(0, 30);
-            this.label2.TabIndex = 1;
             // 
             // Form1
             // 
@@ -371,6 +383,7 @@ namespace KeyTeacher {
         private System.Windows.Forms.Label lblMetronomeDelay;
         private System.Windows.Forms.Button bStop;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox CustomCollectionCombo;
     }
 }
 

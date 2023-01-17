@@ -7,7 +7,6 @@ E:\CSharp\KeyTeacher\bin\Release\netcoreapp3.1\KeyTeacher.pdb
 E:\CSharp\KeyTeacher\obj\Release\netcoreapp3.1\KeyTeacher.csproj.AssemblyReference.cache
 E:\CSharp\KeyTeacher\obj\Release\netcoreapp3.1\KeyTeacher.Form1.resources
 E:\CSharp\KeyTeacher\obj\Release\netcoreapp3.1\KeyTeacher.csproj.GenerateResource.cache
-E:\CSharp\KeyTeacher\obj\Release\netcoreapp3.1\KeyTeacher.GeneratedMSBuildEditorConfig.editorconfig
 E:\CSharp\KeyTeacher\obj\Release\netcoreapp3.1\KeyTeacher.AssemblyInfoInputs.cache
 E:\CSharp\KeyTeacher\obj\Release\netcoreapp3.1\KeyTeacher.AssemblyInfo.cs
 E:\CSharp\KeyTeacher\obj\Release\netcoreapp3.1\KeyTeacher.csproj.CoreCompileInputs.cache
@@ -18,3 +17,4 @@ E:\CSharp\KeyTeacher\bin\Release\netcoreapp3.1\dictionary\en.txt
 E:\CSharp\KeyTeacher\bin\Release\netcoreapp3.1\dictionary\ru.txt
 E:\CSharp\KeyTeacher\bin\Release\netcoreapp3.1\sound\beep_3.wav
 E:\CSharp\KeyTeacher\bin\Release\netcoreapp3.1\sound\metronome.wav
+E:\CSharp\KeyTeacher\bin\Release\netcoreapp3.1\dictionary\custom_collection.txt

@@ -28,6 +28,7 @@ namespace KeyTeacher {
             public bool Numbers;     //числа
             public bool Upper;       //заглавные
             public byte GenMode;    //режим генерации
+            public string CustomCollection; //собственный набор символов
             public bool MetronomeEnabled;
             public int MetronomePeriod;
         }
@@ -258,7 +259,8 @@ namespace KeyTeacher {
     public class Generator {
         #region --- Данные -------------------------------------------------------------------
         readonly string RuWords_FILE = $"{Environment.CurrentDirectory}\\dictionary\\ru.txt";
-        readonly string EnWords_FILE = $"{Environment.CurrentDirectory}\\dictionary\\en.txt";
+        readonly string EnWords_FILE = $"{Environment.CurrentDirectory}\\dictionary\\en.txt"; 
+        //readonly string CustomCollection_FILE = $"{Environment.CurrentDirectory}\\dictionary\\custom_collection.txt";
         string Words;
         Random random = new Random();
         Symbols symbols;
@@ -270,17 +272,22 @@ namespace KeyTeacher {
             Init_Dictionary();
         }
         void Init_Dictionary() {
-            if (config.RU)
+            if (config.RU && (config.GenMode==0 || config.GenMode== 1))
                 Words += File.ReadAllText(RuWords_FILE).Replace(" ", "") + ",";
-            if (config.EN)
+            if (config.EN && (config.GenMode == 0 || config.GenMode == 1))
                 Words += File.ReadAllText(EnWords_FILE).Replace(" ", "") + ",";
         }
         public string GetWord() {
             switch (config.GenMode) {
                 case 0: //режим Word
+                    Console.WriteLine("Word");
                     return GetWordByStatistic()+" ";
                 case 1: //режим Symbol
+                    Console.WriteLine("Symbol");
                     return GetSymbolByStatistic().ToString();
+                case 2: //режим Custom
+                    Console.WriteLine("Custom");
+                    return GetCustomSymbol().ToString();
                 default:
                     return GetSymbolByStatistic().ToString();
             }
@@ -305,19 +312,27 @@ namespace KeyTeacher {
             else
                 return word;
         }
-        char GetSymbolByStatistic() {
+        char GetSymbolByStatistic()
+        {
             int index = 0;
             int count = 0;
             int rand;
             var s = symbols.SymbolList;
             rand = random.Next(s.Sum(x => (int)x.PressDelay.Average()));
-            for (int i = 0; i < s.Length; i++) {
+            for (int i = 0; i < s.Length; i++)
+            {
                 if (count > rand)
                     break;
                 count += (int)s[i].PressDelay.Average();
                 index = i;
             }
             return s[index].Name;
+        }
+        char GetCustomSymbol()
+        {
+            int rand_index;
+            rand_index = random.Next(config.CustomCollection.Length);            
+            return config.CustomCollection[rand_index];
         }
     }
     public class Symbols {
